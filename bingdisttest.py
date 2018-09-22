@@ -13,13 +13,13 @@ import json
 bingMapsKey = "AujkYNVsMInKkjbgHl3BrmAa_mWCO6lXqwLqp08P7lSPI_9HTPGdUFSQzHpulOyc"
 
 # input information
-longitude = -122.019943
-latitude = 37.285989
-destination = "1427 Alderbrook Ln San Jose CA 95129"
+origin = "2900 Stone Meadow CT Richmond VA 23228"
+destination = "8909 Valley Green Williamsburg VA"
 
+encodedOrig = urllib.parse.quote(origin, safe='')
 encodedDest = urllib.parse.quote(destination, safe='')
 
-routeUrl = "http://dev.virtualearth.net/REST/V1/Routes/Driving?wp.0=" + str(latitude) + "," + str(longitude) + "&wp.1=" + encodedDest + "&key=" + bingMapsKey
+routeUrl = "http://dev.virtualearth.net/REST/V1/Routes/Driving?wp.0=" + encodedOrig + "&wp.1=" + encodedDest + "&key=" + bingMapsKey
 
 request = urllib.request.Request(routeUrl)
 response = urllib.request.urlopen(request)
@@ -37,5 +37,6 @@ itineraryItemsdf = pd.DataFrame(itineraryItems)
 #dfitineraryItems.to_excel(writer,'Sheet1')
 #writer.save()
 
-itineraryItemsdf.travelDistance.sum()
-itineraryItemsdf.travelDuration.sum() / 60   
+# Distance in miles from kilometers and time in minutes from seconds
+itineraryItemsdf.travelDistance.sum() * 0.621371
+itineraryItemsdf.travelDuration.sum() / 60
