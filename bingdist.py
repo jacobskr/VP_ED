@@ -8,56 +8,68 @@ Created on Fri Sep 21 19:04:33 2018
 import pandas as pd
 import urllib.request
 import json
+import time
+# Bing Maps Key (https://www.bingmapsportal.com/) in config file
+try:
+    import config as cf
+except:
+    print("No config file found with bingMapsKey, create one or type it in below:")
+    cf.bingMapsKey = input('')
 
-# Bing Maps Key 
-bingMapsKey = "AujkYNVsMInKkjbgHl3BrmAa_mWCO6lXqwLqp08P7lSPI_9HTPGdUFSQzHpulOyc"
 
-# Input information
-tripdf = pd.read_excel(r"C:\Users\User\Desktop\Test Files\Addresses.xlsx")
-
-# Create dictionary
-traveldict = {"Origin": [], "Destination": [], "Distance": [], "Duration": []}
-
-# Iterate over each origin/destination and append into traveldict
-i = 0
-
-for row in tripdf.itertuples(index=True, name='Pandas'):
-    # Bing Maps API address input encoding
-    encodedOrig = urllib.parse.quote(tripdf.Origin[i], safe='')
-    encodedDest = urllib.parse.quote(tripdf.Destination[i], safe='')
+def BingDistance(xlfilein, xlfileout):
+    #Time the run
+    start_time = time.time()
     
-    # Bing Maps API URL
-    routeUrl = "http://dev.virtualearth.net/REST/V1/Routes/Driving?wp.0=" + encodedOrig + "&wp.1=" + encodedDest + "&key=" + bingMapsKey
+    # Input information
+    tripdf = pd.read_excel(xlfilein)
     
-    # Bing Maps URL request and response
-    request = urllib.request.Request(routeUrl)
-    response = urllib.request.urlopen(request)
+    # Create dictionary
+    traveldict = {"Origin": [], "Destination": [], "Distance": [], "Duration": []}
     
-    # JSON and formatting
-    r = response.read().decode(encoding="utf-8")
-    result = json.loads(r)
+    # Iterate over each origin/destination and append into traveldict
+    i = 0
     
-    itineraryItems = result["resourceSets"][0]["resources"][0]["routeLegs"][0]["itineraryItems"]
-   
-    #Turn into pandas df
-    itineraryItemsdf = pd.DataFrame(itineraryItems)
-
-    # Distance in miles from kilometers and time in minutes from seconds
-    dist = itineraryItemsdf.travelDistance.sum() * 0.621371
-    dur = itineraryItemsdf.travelDuration.sum() / 60
+    for row in tripdf.itertuples(index=True, name='Pandas'):
+        # Bing Maps API address input encoding
+        encodedOrig = urllib.parse.quote(tripdf.Origin[i], safe='')
+        encodedDest = urllib.parse.quote(tripdf.Destination[i], safe='')
+        
+        # Bing Maps API URL
+        routeUrl = ("http://dev.virtualearth.net/REST/V1/Routes/Driving?wp.0="
+                    + encodedOrig + "&wp.1=" + encodedDest + 
+                    "&key=" + cf.bingMapsKey)
+        
+        # Bing Maps URL request and response
+        request = urllib.request.Request(routeUrl)
+        response = urllib.request.urlopen(request)
+        
+        # JSON and formatting
+        r = response.read().decode(encoding="utf-8")
+        result = json.loads(r)
+        
+        itineraryItems = result["resourceSets"][0]["resources"][0]["routeLegs"][0]["itineraryItems"]
+       
+        #Turn into pandas df
+        itineraryItemsdf = pd.DataFrame(itineraryItems)
     
-    # Append dictionary
-    traveldict["Origin"].append(tripdf.Origin[i])
-    traveldict["Destination"].append(tripdf.Destination[i])
-    traveldict["Distance"].append(dist)
-    traveldict["Duration"].append(dur)
+        # Distance in miles from kilometers and time in minutes from seconds
+        dist = itineraryItemsdf.travelDistance.sum() * 0.621371
+        dur = itineraryItemsdf.travelDuration.sum() / 60
+        
+        # Append dictionary
+        traveldict["Origin"].append(tripdf.Origin[i])
+        traveldict["Destination"].append(tripdf.Destination[i])
+        traveldict["Distance"].append(dist)
+        traveldict["Duration"].append(dur)
+        
+        print(i)
+        i += 1
     
-    print(i)
-    i += 1
-
-travelpd = pd.DataFrame(traveldict)
-
-writer = pd.ExcelWriter(r'C:\Users\User\Desktop\Test Files\travelpd.xlsx')
-travelpd.to_excel(writer,'Sheet1', index = False)
-writer.save()
-
+    travelpd = pd.DataFrame(traveldict)
+    
+    writer = pd.ExcelWriter(xlfileout)
+    travelpd.to_excel(writer,'Sheet1', index = False)
+    writer.save()
+    
+    print("--- %s seconds ---" % (time.time() - start_time))
