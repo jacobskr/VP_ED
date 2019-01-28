@@ -6,14 +6,14 @@ claims <- read_rds("Data/claimsCleanFull.RDS")
 
 
 sub <- claims %>%
-  mutate(TARGET = ifelse(SERVICE_TYPE == "ED", 1, 0)) %>%
+  mutate(TARGET = ifelse(SERVICE_TYPE == "ED" & ED_NOT_NEEDED_PROP > 0.9, 1, 0)) %>%
   group_by(MRN_ALIAS, MEMBER_SEX) %>%
   summarize(AGE = max(MEMBER_AGE),
             TARGET = as.factor(max(TARGET)),
             CLAIM_YEARS = n_distinct(YEAR),
             NUM_VISITS = max(EPISODE_SEQ),
             ALL_CLAIMS = n(),
-            ED_NEEDED_0_ALL = sum(ED_NOT_NEEDED_PROP == 0),
+            EDNN_1_ALL = sum(ED_NOT_NEEDED_PROP == 1),
             MEAN_EDNN_ALL = mean(ED_NOT_NEEDED_PROP),
             PREV_1_ALL = sum(PREVENTABILITY == 1),
             MEAN_PREV_ALL = mean(PREVENTABILITY),
@@ -24,7 +24,7 @@ ED_claims <- subset(claims, claims$SERVICE_TYPE %in% "ED")
 ED_sub <- ED_claims %>%
   group_by(MRN_ALIAS, MEMBER_SEX) %>%
   summarize(ED_CLAIMS = n(),
-            ED_NEEDED_0_ED = sum(ED_NOT_NEEDED_PROP == 0),
+            EDNN_1_ED = sum(ED_NOT_NEEDED_PROP == 1),
             MEAN_EDNN_ED = mean(ED_NOT_NEEDED_PROP),
             PREV_1_ED = sum(PREVENTABILITY == 1),
             MEAN_PREV_ED = mean(PREVENTABILITY),
