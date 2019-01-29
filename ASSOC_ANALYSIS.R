@@ -2,14 +2,25 @@ library(dplyr)
 library(tidyverse)
 library(caret)
 library(arules)
+library(keras)
+library(reshape2)
 
 claims <- read_rds("Data/claimsCleanFull.RDS")
 claims["PCP_ID"][is.na(claims["PCP_ID"])] <- 0
 
+code1_sub <- claims %>% 
+  group_by(MRN_ALIAS, CODE_1) %>% 
+  summarise(n = n())
+
+# code_1_sub <- code1_sub %>%
+#   group_by(MRN_ALIAS) %>%
+#   summarise(C1 = code1_sub$CODE_1[code1_sub$n == max(code1_sub$n)])
+
+# c1_pivot <- acast(code1_sub, MRN_ALIAS ~ CODE_1)
 
 claims_sub <- claims %>%
-  mutate(TARGET = ifelse(SERVICE_TYPE == "ED" & ED_NOT_NEEDED_PROP > 0.9, 1, 0)) %>%
-  mutate(AGE_BIN = as.factor(cut(MEMBER_AGE, breaks = seq(0,90, by =10)))) %>% 
+  mutate(TARGET = ifelse(SERVICE_TYPE == "ED" & (ED_NOT_NEEDED_PROP > 0.9 | NA), 1, 0)) %>%
+  mutate(AGE_BIN = as.factor(cut(MEMBER_AGE, breaks = seq(0,90, by =10), right = FALSE))) %>% 
   group_by(MRN_ALIAS, MEMBER_SEX, AGE_BIN) %>%
   summarize(AGE = max(MEMBER_AGE),
             TARGET = as.factor(max(TARGET)),
@@ -42,6 +53,14 @@ claims_sub <- claims %>%
 # 
 # MEMBER_DATA <- full_join(sub, ED_sub, by = c("MRN_ALIAS", "MEMBER_SEX"), suffix = c(".all", ".ed"))
 
+
+#glm
+glm(data = claims_sub, formula = TARGET ~ MEMBER_SEX + AGE_BIN + PCP_V70_YEARLY_NONED + V70.0_ED_VISITS_BOOL)
+
+
+
+
+#apriori
 claims_fct <- claims_sub[,c(2, 3, 12, 14, 5)]
 
 
