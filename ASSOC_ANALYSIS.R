@@ -34,6 +34,7 @@ seq_grp <- claims %>%
             )
 
 
+memberdf <- full_join(last_visit, seq_grp, by = c("MRN_ALIAS", "EPISODE_SEQ"), suffix = c(".all", ".ed"))
 
 
 
