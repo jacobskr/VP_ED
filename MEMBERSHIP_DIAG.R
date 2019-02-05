@@ -43,7 +43,7 @@ icd9 <- str_subset(all_diag$all_diag, "^\\d") #ICD-9 codes start with a number o
 icd9e <- str_subset(all_diag$all_diag, "[E]\\d{3}") #ICD-9 "E" codes have 3 digits before decimal
 
 icd9Only <- all_diag %>%
-  filter((all_diag %in% icd9 | all_diag %in% icd9e | all_diag %in% icdv) & !(all_diag %in% icd10v))
+  filter((all_diag %in% icd9) | all_diag %in% icd9e) | all_diag %in% icdv) & !(all_diag %in% icd10v))
 
 icd9vector <- icd9Only$all_diag 
 
@@ -144,140 +144,158 @@ claims <- claimsFull %>%
 
 claims <- claims %>%
   mutate(
-         CHRONIC_BDSYS_0 = ifelse(BODY_SYS_1 == 1 & CHRONIC_1 == 2 | BODY_SYS_2 == 1 & CHRONIC_2 == 2 | BODY_SYS_3 == 1 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 1 & CHRONIC_4 == 2 | BODY_SYS_5 == 1 & CHRONIC_5 == 2 | BODY_SYS_6 == 1 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 1 & CHRONIC_7 == 2 | BODY_SYS_8 == 1 & CHRONIC_8 == 2 | BODY_SYS_9 == 1 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 1 & CHRONIC_10 == 2 | BODY_SYS_11 == 1 & CHRONIC_11 == 2 | BODY_SYS_12 == 1 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 1 & CHRONIC_13 == 2 | BODY_SYS_14 == 1 & CHRONIC_14 == 2 | BODY_SYS_15 == 1 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 1 & CHRONIC_16 == 2 | BODY_SYS_17 == 1 & CHRONIC_17 == 2 | BODY_SYS_18 == 1 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_1 = ifelse(BODY_SYS_1 == 2 & CHRONIC_1 == 2 | BODY_SYS_2 == 2 & CHRONIC_2 == 2 | BODY_SYS_3 == 2 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 2 & CHRONIC_4 == 2 | BODY_SYS_5 == 2 & CHRONIC_5 == 2 | BODY_SYS_6 == 2 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 2 & CHRONIC_7 == 2 | BODY_SYS_8 == 2 & CHRONIC_8 == 2 | BODY_SYS_9 == 2 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 2 & CHRONIC_10 == 2 | BODY_SYS_11 == 2 & CHRONIC_11 == 2 | BODY_SYS_12 == 2 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 2 & CHRONIC_13 == 2 | BODY_SYS_14 == 2 & CHRONIC_14 == 2 | BODY_SYS_15 == 2 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 2 & CHRONIC_16 == 2 | BODY_SYS_17 == 2 & CHRONIC_17 == 2 | BODY_SYS_18 == 2 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_2 = ifelse(BODY_SYS_1 == 3 & CHRONIC_1 == 2 | BODY_SYS_2 == 3 & CHRONIC_2 == 2 | BODY_SYS_3 == 3 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 3 & CHRONIC_4 == 2 | BODY_SYS_5 == 3 & CHRONIC_5 == 2 | BODY_SYS_6 == 3 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 3 & CHRONIC_7 == 2 | BODY_SYS_8 == 3 & CHRONIC_8 == 2 | BODY_SYS_9 == 3 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 3 & CHRONIC_10 == 2 | BODY_SYS_11 == 3 & CHRONIC_11 == 2 | BODY_SYS_12 == 3 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 3 & CHRONIC_13 == 2 | BODY_SYS_14 == 3 & CHRONIC_14 == 2 | BODY_SYS_15 == 3 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 3 & CHRONIC_16 == 2 | BODY_SYS_17 == 3 & CHRONIC_17 == 2 | BODY_SYS_18 == 3 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_3 = ifelse(BODY_SYS_1 == 4 & CHRONIC_1 == 2 | BODY_SYS_2 == 4 & CHRONIC_2 == 2 | BODY_SYS_3 == 4 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 4 & CHRONIC_4 == 2 | BODY_SYS_5 == 4 & CHRONIC_5 == 2 | BODY_SYS_6 == 4 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 4 & CHRONIC_7 == 2 | BODY_SYS_8 == 4 & CHRONIC_8 == 2 | BODY_SYS_9 == 4 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 4 & CHRONIC_10 == 2 | BODY_SYS_11 == 4 & CHRONIC_11 == 2 | BODY_SYS_12 == 4 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 4 & CHRONIC_13 == 2 | BODY_SYS_14 == 4 & CHRONIC_14 == 2 | BODY_SYS_15 == 4 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 4 & CHRONIC_16 == 2 | BODY_SYS_17 == 4 & CHRONIC_17 == 2 | BODY_SYS_18 == 4 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_4 = ifelse(BODY_SYS_1 == 5 & CHRONIC_1 == 2 | BODY_SYS_2 == 5 & CHRONIC_2 == 2 | BODY_SYS_3 == 5 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 5 & CHRONIC_4 == 2 | BODY_SYS_5 == 5 & CHRONIC_5 == 2 | BODY_SYS_6 == 5 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 5 & CHRONIC_7 == 2 | BODY_SYS_8 == 5 & CHRONIC_8 == 2 | BODY_SYS_9 == 5 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 5 & CHRONIC_10 == 2 | BODY_SYS_11 == 5 & CHRONIC_11 == 2 | BODY_SYS_12 == 5 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 5 & CHRONIC_13 == 2 | BODY_SYS_14 == 5 & CHRONIC_14 == 2 | BODY_SYS_15 == 5 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 5 & CHRONIC_16 == 2 | BODY_SYS_17 == 5 & CHRONIC_17 == 2 | BODY_SYS_18 == 5 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_5 = ifelse(BODY_SYS_1 == 6 & CHRONIC_1 == 2 | BODY_SYS_2 == 6 & CHRONIC_2 == 2 | BODY_SYS_3 == 6 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 6 & CHRONIC_4 == 2 | BODY_SYS_5 == 6 & CHRONIC_5 == 2 | BODY_SYS_6 == 6 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 6 & CHRONIC_7 == 2 | BODY_SYS_8 == 6 & CHRONIC_8 == 2 | BODY_SYS_9 == 6 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 6 & CHRONIC_10 == 2 | BODY_SYS_11 == 6 & CHRONIC_11 == 2 | BODY_SYS_12 == 6 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 6 & CHRONIC_13 == 2 | BODY_SYS_14 == 6 & CHRONIC_14 == 2 | BODY_SYS_15 == 6 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 6 & CHRONIC_16 == 2 | BODY_SYS_17 == 6 & CHRONIC_17 == 2 | BODY_SYS_18 == 6 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_6 = ifelse(BODY_SYS_1 == 7 & CHRONIC_1 == 2 | BODY_SYS_2 == 7 & CHRONIC_2 == 2 | BODY_SYS_3 == 7 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 7 & CHRONIC_4 == 2 | BODY_SYS_5 == 7 & CHRONIC_5 == 2 | BODY_SYS_6 == 7 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 7 & CHRONIC_7 == 2 | BODY_SYS_8 == 7 & CHRONIC_8 == 2 | BODY_SYS_9 == 7 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 7 & CHRONIC_10 == 2 | BODY_SYS_11 == 7 & CHRONIC_11 == 2 | BODY_SYS_12 == 7 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 7 & CHRONIC_13 == 2 | BODY_SYS_14 == 7 & CHRONIC_14 == 2 | BODY_SYS_15 == 7 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 7 & CHRONIC_16 == 2 | BODY_SYS_17 == 7 & CHRONIC_17 == 2 | BODY_SYS_18 == 7 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_7 = ifelse(BODY_SYS_1 == 8 & CHRONIC_1 == 2 | BODY_SYS_2 == 8 & CHRONIC_2 == 2 | BODY_SYS_3 == 8 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 8 & CHRONIC_4 == 2 | BODY_SYS_5 == 8 & CHRONIC_5 == 2 | BODY_SYS_6 == 8 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 8 & CHRONIC_7 == 2 | BODY_SYS_8 == 8 & CHRONIC_8 == 2 | BODY_SYS_9 == 8 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 8 & CHRONIC_10 == 2 | BODY_SYS_11 == 8 & CHRONIC_11 == 2 | BODY_SYS_12 == 8 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 8 & CHRONIC_13 == 2 | BODY_SYS_14 == 8 & CHRONIC_14 == 2 | BODY_SYS_15 == 8 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 8 & CHRONIC_16 == 2 | BODY_SYS_17 == 8 & CHRONIC_17 == 2 | BODY_SYS_18 == 8 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_8 = ifelse(BODY_SYS_1 == 9 & CHRONIC_1 == 2 | BODY_SYS_2 == 9 & CHRONIC_2 == 2 | BODY_SYS_3 == 9 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 9 & CHRONIC_4 == 2 | BODY_SYS_5 == 9 & CHRONIC_5 == 2 | BODY_SYS_6 == 9 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 9 & CHRONIC_7 == 2 | BODY_SYS_8 == 9 & CHRONIC_8 == 2 | BODY_SYS_9 == 9 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 9 & CHRONIC_10 == 2 | BODY_SYS_11 == 9 & CHRONIC_11 == 2 | BODY_SYS_12 == 9 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 9 & CHRONIC_13 == 2 | BODY_SYS_14 == 9 & CHRONIC_14 == 2 | BODY_SYS_15 == 9 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 9 & CHRONIC_16 == 2 | BODY_SYS_17 == 9 & CHRONIC_17 == 2 | BODY_SYS_18 == 9 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_9 = ifelse(BODY_SYS_1 == 10 & CHRONIC_1 == 2 | BODY_SYS_2 == 10 & CHRONIC_2 == 2 | BODY_SYS_3 == 10 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 10 & CHRONIC_4 == 2 | BODY_SYS_5 == 10 & CHRONIC_5 == 2 | BODY_SYS_6 == 10 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 10 & CHRONIC_7 == 2 | BODY_SYS_8 == 10 & CHRONIC_8 == 2 | BODY_SYS_9 == 10 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 10 & CHRONIC_10 == 2 | BODY_SYS_11 == 10 & CHRONIC_11 == 2 | BODY_SYS_12 == 10 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 10 & CHRONIC_13 == 2 | BODY_SYS_14 == 10 & CHRONIC_14 == 2 | BODY_SYS_15 == 10 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 10 & CHRONIC_16 == 2 | BODY_SYS_17 == 10 & CHRONIC_17 == 2 | BODY_SYS_18 == 10 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_10 = ifelse(BODY_SYS_1 == 11 & CHRONIC_1 == 2 | BODY_SYS_2 == 11 & CHRONIC_2 == 2 | BODY_SYS_3 == 11 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 11 & CHRONIC_4 == 2 | BODY_SYS_5 == 11 & CHRONIC_5 == 2 | BODY_SYS_6 == 11 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 11 & CHRONIC_7 == 2 | BODY_SYS_8 == 11 & CHRONIC_8 == 2 | BODY_SYS_9 == 11 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 11 & CHRONIC_10 == 2 | BODY_SYS_11 == 11 & CHRONIC_11 == 2 | BODY_SYS_12 == 11 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 11 & CHRONIC_13 == 2 | BODY_SYS_14 == 11 & CHRONIC_14 == 2 | BODY_SYS_15 == 11 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 11 & CHRONIC_16 == 2 | BODY_SYS_17 == 11 & CHRONIC_17 == 2 | BODY_SYS_18 == 11 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_11 = ifelse(BODY_SYS_1 == 12 & CHRONIC_1 == 2 | BODY_SYS_2 == 12 & CHRONIC_2 == 2 | BODY_SYS_3 == 12 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 12 & CHRONIC_4 == 2 | BODY_SYS_5 == 12 & CHRONIC_5 == 2 | BODY_SYS_6 == 12 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 12 & CHRONIC_7 == 2 | BODY_SYS_8 == 12 & CHRONIC_8 == 2 | BODY_SYS_9 == 12 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 12 & CHRONIC_10 == 2 | BODY_SYS_11 == 12 & CHRONIC_11 == 2 | BODY_SYS_12 == 12 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 12 & CHRONIC_13 == 2 | BODY_SYS_14 == 12 & CHRONIC_14 == 2 | BODY_SYS_15 == 12 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 12 & CHRONIC_16 == 2 | BODY_SYS_17 == 12 & CHRONIC_17 == 2 | BODY_SYS_18 == 12 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_12 = ifelse(BODY_SYS_1 == 13 & CHRONIC_1 == 2 | BODY_SYS_2 == 13 & CHRONIC_2 == 2 | BODY_SYS_3 == 13 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 13 & CHRONIC_4 == 2 | BODY_SYS_5 == 13 & CHRONIC_5 == 2 | BODY_SYS_6 == 13 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 13 & CHRONIC_7 == 2 | BODY_SYS_8 == 13 & CHRONIC_8 == 2 | BODY_SYS_9 == 13 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 13 & CHRONIC_10 == 2 | BODY_SYS_11 == 13 & CHRONIC_11 == 2 | BODY_SYS_12 == 13 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 13 & CHRONIC_13 == 2 | BODY_SYS_14 == 13 & CHRONIC_14 == 2 | BODY_SYS_15 == 13 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 13 & CHRONIC_16 == 2 | BODY_SYS_17 == 13 & CHRONIC_17 == 2 | BODY_SYS_18 == 13 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_13 = ifelse(BODY_SYS_1 == 14 & CHRONIC_1 == 2 | BODY_SYS_2 == 14 & CHRONIC_2 == 2 | BODY_SYS_3 == 14 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 14 & CHRONIC_4 == 2 | BODY_SYS_5 == 14 & CHRONIC_5 == 2 | BODY_SYS_6 == 14 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 14 & CHRONIC_7 == 2 | BODY_SYS_8 == 14 & CHRONIC_8 == 2 | BODY_SYS_9 == 14 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 14 & CHRONIC_10 == 2 | BODY_SYS_11 == 14 & CHRONIC_11 == 2 | BODY_SYS_12 == 14 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 14 & CHRONIC_13 == 2 | BODY_SYS_14 == 14 & CHRONIC_14 == 2 | BODY_SYS_15 == 14 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 14 & CHRONIC_16 == 2 | BODY_SYS_17 == 14 & CHRONIC_17 == 2 | BODY_SYS_18 == 14 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_14 = ifelse(BODY_SYS_1 == 15 & CHRONIC_1 == 2 | BODY_SYS_2 == 15 & CHRONIC_2 == 2 | BODY_SYS_3 == 15 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 15 & CHRONIC_4 == 2 | BODY_SYS_5 == 15 & CHRONIC_5 == 2 | BODY_SYS_6 == 15 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 15 & CHRONIC_7 == 2 | BODY_SYS_8 == 15 & CHRONIC_8 == 2 | BODY_SYS_9 == 15 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 15 & CHRONIC_10 == 2 | BODY_SYS_11 == 15 & CHRONIC_11 == 2 | BODY_SYS_12 == 15 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 15 & CHRONIC_13 == 2 | BODY_SYS_14 == 15 & CHRONIC_14 == 2 | BODY_SYS_15 == 15 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 15 & CHRONIC_16 == 2 | BODY_SYS_17 == 15 & CHRONIC_17 == 2 | BODY_SYS_18 == 15 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_15 = ifelse(BODY_SYS_1 == 16 & CHRONIC_1 == 2 | BODY_SYS_2 == 16 & CHRONIC_2 == 2 | BODY_SYS_3 == 16 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 16 & CHRONIC_4 == 2 | BODY_SYS_5 == 16 & CHRONIC_5 == 2 | BODY_SYS_6 == 16 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 16 & CHRONIC_7 == 2 | BODY_SYS_8 == 16 & CHRONIC_8 == 2 | BODY_SYS_9 == 16 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 16 & CHRONIC_10 == 2 | BODY_SYS_11 == 16 & CHRONIC_11 == 2 | BODY_SYS_12 == 16 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 16 & CHRONIC_13 == 2 | BODY_SYS_14 == 16 & CHRONIC_14 == 2 | BODY_SYS_15 == 16 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 16 & CHRONIC_16 == 2 | BODY_SYS_17 == 16 & CHRONIC_17 == 2 | BODY_SYS_18 == 16 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_16 = ifelse(BODY_SYS_1 == 17 & CHRONIC_1 == 2 | BODY_SYS_2 == 17 & CHRONIC_2 == 2 | BODY_SYS_3 == 17 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 17 & CHRONIC_4 == 2 | BODY_SYS_5 == 17 & CHRONIC_5 == 2 | BODY_SYS_6 == 17 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 17 & CHRONIC_7 == 2 | BODY_SYS_8 == 17 & CHRONIC_8 == 2 | BODY_SYS_9 == 17 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 17 & CHRONIC_10 == 2 | BODY_SYS_11 == 17 & CHRONIC_11 == 2 | BODY_SYS_12 == 17 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 17 & CHRONIC_13 == 2 | BODY_SYS_14 == 17 & CHRONIC_14 == 2 | BODY_SYS_15 == 17 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 17 & CHRONIC_16 == 2 | BODY_SYS_17 == 17 & CHRONIC_17 == 2 | BODY_SYS_18 == 17 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_17 = ifelse(BODY_SYS_1 == 18 & CHRONIC_1 == 2 | BODY_SYS_2 == 18 & CHRONIC_2 == 2 | BODY_SYS_3 == 18 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 18 & CHRONIC_4 == 2 | BODY_SYS_5 == 18 & CHRONIC_5 == 2 | BODY_SYS_6 == 18 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 18 & CHRONIC_7 == 2 | BODY_SYS_8 == 18 & CHRONIC_8 == 2 | BODY_SYS_9 == 18 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 18 & CHRONIC_10 == 2 | BODY_SYS_11 == 18 & CHRONIC_11 == 2 | BODY_SYS_12 == 18 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 18 & CHRONIC_13 == 2 | BODY_SYS_14 == 18 & CHRONIC_14 == 2 | BODY_SYS_15 == 18 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 18 & CHRONIC_16 == 2 | BODY_SYS_17 == 18 & CHRONIC_17 == 2 | BODY_SYS_18 == 18 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_18 = ifelse(BODY_SYS_1 == 19 & CHRONIC_1 == 2 | BODY_SYS_2 == 19 & CHRONIC_2 == 2 | BODY_SYS_3 == 19 & CHRONIC_3 == 2 |
-                              BODY_SYS_4 == 19 & CHRONIC_4 == 2 | BODY_SYS_5 == 19 & CHRONIC_5 == 2 | BODY_SYS_6 == 19 & CHRONIC_6 == 2 |
-                              BODY_SYS_7 == 19 & CHRONIC_7 == 2 | BODY_SYS_8 == 19 & CHRONIC_8 == 2 | BODY_SYS_9 == 19 & CHRONIC_9 == 2 |
-                              BODY_SYS_10 == 19 & CHRONIC_10 == 2 | BODY_SYS_11 == 19 & CHRONIC_11 == 2 | BODY_SYS_12 == 19 & CHRONIC_12 == 2 |
-                              BODY_SYS_13 == 19 & CHRONIC_13 == 2 | BODY_SYS_14 == 19 & CHRONIC_14 == 2 | BODY_SYS_15 == 19 & CHRONIC_15 == 2 |
-                              BODY_SYS_16 == 19 & CHRONIC_16 == 2 | BODY_SYS_17 == 19 & CHRONIC_17 == 2 | BODY_SYS_18 == 19 & CHRONIC_18 == 2, 1, 0),
-         CHRONIC_BDSYS_NONE = ifelse(BODY_SYS_1 == 20 & CHRONIC_1 == 2 | BODY_SYS_2 == 20 & CHRONIC_2 == 2 | BODY_SYS_3 == 20 & CHRONIC_3 == 2 |
-                                     BODY_SYS_4 == 20 & CHRONIC_4 == 2 | BODY_SYS_5 == 20 & CHRONIC_5 == 2 | BODY_SYS_6 == 20 & CHRONIC_6 == 2 |
-                                     BODY_SYS_7 == 20 & CHRONIC_7 == 2 | BODY_SYS_8 == 20 & CHRONIC_8 == 2 | BODY_SYS_9 == 20 & CHRONIC_9 == 2 |
-                                     BODY_SYS_10 == 20 & CHRONIC_10 == 2 | BODY_SYS_11 == 20 & CHRONIC_11 == 2 | BODY_SYS_12 == 20 & CHRONIC_12 == 2 |
-                                     BODY_SYS_13 == 20 & CHRONIC_13 == 2 | BODY_SYS_14 == 20 & CHRONIC_14 == 2 | BODY_SYS_15 == 20 & CHRONIC_15 == 2 |
-                                     BODY_SYS_16 == 20 & CHRONIC_16 == 2 | BODY_SYS_17 == 20 & CHRONIC_17 == 2 | BODY_SYS_18 == 20 & CHRONIC_18 == 2, 1, 0))
+         CHRONIC_BDSYS_0 = ifelse((BODY_SYS_1 == 1 & CHRONIC_1 == 2) | (BODY_SYS_2 == 1 & CHRONIC_2 == 2) | (BODY_SYS_3 == 1 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 1 & CHRONIC_4 == 2) | (BODY_SYS_5 == 1 & CHRONIC_5 == 2) | (BODY_SYS_6 == 1 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 1 & CHRONIC_7 == 2) | (BODY_SYS_8 == 1 & CHRONIC_8 == 2) | (BODY_SYS_9 == 1 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 1 & CHRONIC_10 == 2) | (BODY_SYS_11 == 1 & CHRONIC_11 == 2) | (BODY_SYS_12 == 1 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 1 & CHRONIC_13 == 2) | (BODY_SYS_14 == 1 & CHRONIC_14 == 2) | (BODY_SYS_15 == 1 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 1 & CHRONIC_16 == 2) | (BODY_SYS_17 == 1 & CHRONIC_17 == 2) | (BODY_SYS_18 == 1 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_1 = ifelse((BODY_SYS_1 == 2 & CHRONIC_1 == 2) | (BODY_SYS_2 == 2 & CHRONIC_2 == 2) | (BODY_SYS_3 == 2 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 2 & CHRONIC_4 == 2) | (BODY_SYS_5 == 2 & CHRONIC_5 == 2) | (BODY_SYS_6 == 2 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 2 & CHRONIC_7 == 2) | (BODY_SYS_8 == 2 & CHRONIC_8 == 2) | (BODY_SYS_9 == 2 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 2 & CHRONIC_10 == 2) | (BODY_SYS_11 == 2 & CHRONIC_11 == 2) | (BODY_SYS_12 == 2 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 2 & CHRONIC_13 == 2) | (BODY_SYS_14 == 2 & CHRONIC_14 == 2) | (BODY_SYS_15 == 2 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 2 & CHRONIC_16 == 2) | (BODY_SYS_17 == 2 & CHRONIC_17 == 2) | (BODY_SYS_18 == 2 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_2 = ifelse((BODY_SYS_1 == 3 & CHRONIC_1 == 2) | (BODY_SYS_2 == 3 & CHRONIC_2 == 2) | (BODY_SYS_3 == 3 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 3 & CHRONIC_4 == 2) | (BODY_SYS_5 == 3 & CHRONIC_5 == 2) | (BODY_SYS_6 == 3 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 3 & CHRONIC_7 == 2) | (BODY_SYS_8 == 3 & CHRONIC_8 == 2) | (BODY_SYS_9 == 3 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 3 & CHRONIC_10 == 2) | (BODY_SYS_11 == 3 & CHRONIC_11 == 2) | (BODY_SYS_12 == 3 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 3 & CHRONIC_13 == 2) | (BODY_SYS_14 == 3 & CHRONIC_14 == 2) | (BODY_SYS_15 == 3 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 3 & CHRONIC_16 == 2) | (BODY_SYS_17 == 3 & CHRONIC_17 == 2) | (BODY_SYS_18 == 3 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_3 = ifelse((BODY_SYS_1 == 4 & CHRONIC_1 == 2) | (BODY_SYS_2 == 4 & CHRONIC_2 == 2) | (BODY_SYS_3 == 4 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 4 & CHRONIC_4 == 2) | (BODY_SYS_5 == 4 & CHRONIC_5 == 2) | (BODY_SYS_6 == 4 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 4 & CHRONIC_7 == 2) | (BODY_SYS_8 == 4 & CHRONIC_8 == 2) | (BODY_SYS_9 == 4 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 4 & CHRONIC_10 == 2) | (BODY_SYS_11 == 4 & CHRONIC_11 == 2) | (BODY_SYS_12 == 4 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 4 & CHRONIC_13 == 2) | (BODY_SYS_14 == 4 & CHRONIC_14 == 2) | (BODY_SYS_15 == 4 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 4 & CHRONIC_16 == 2) | (BODY_SYS_17 == 4 & CHRONIC_17 == 2) | (BODY_SYS_18 == 4 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_4 = ifelse((BODY_SYS_1 == 5 & CHRONIC_1 == 2) | (BODY_SYS_2 == 5 & CHRONIC_2 == 2) | (BODY_SYS_3 == 5 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 5 & CHRONIC_4 == 2) | (BODY_SYS_5 == 5 & CHRONIC_5 == 2) | (BODY_SYS_6 == 5 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 5 & CHRONIC_7 == 2) | (BODY_SYS_8 == 5 & CHRONIC_8 == 2) | (BODY_SYS_9 == 5 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 5 & CHRONIC_10 == 2) | (BODY_SYS_11 == 5 & CHRONIC_11 == 2) | (BODY_SYS_12 == 5 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 5 & CHRONIC_13 == 2) | (BODY_SYS_14 == 5 & CHRONIC_14 == 2) | (BODY_SYS_15 == 5 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 5 & CHRONIC_16 == 2) | (BODY_SYS_17 == 5 & CHRONIC_17 == 2) | (BODY_SYS_18 == 5 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_5 = ifelse((BODY_SYS_1 == 6 & CHRONIC_1 == 2) | (BODY_SYS_2 == 6 & CHRONIC_2 == 2) | (BODY_SYS_3 == 6 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 6 & CHRONIC_4 == 2) | (BODY_SYS_5 == 6 & CHRONIC_5 == 2) | (BODY_SYS_6 == 6 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 6 & CHRONIC_7 == 2) | (BODY_SYS_8 == 6 & CHRONIC_8 == 2) | (BODY_SYS_9 == 6 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 6 & CHRONIC_10 == 2) | (BODY_SYS_11 == 6 & CHRONIC_11 == 2) | (BODY_SYS_12 == 6 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 6 & CHRONIC_13 == 2) | (BODY_SYS_14 == 6 & CHRONIC_14 == 2) | (BODY_SYS_15 == 6 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 6 & CHRONIC_16 == 2) | (BODY_SYS_17 == 6 & CHRONIC_17 == 2) | (BODY_SYS_18 == 6 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_6 = ifelse((BODY_SYS_1 == 7 & CHRONIC_1 == 2) | (BODY_SYS_2 == 7 & CHRONIC_2 == 2) | (BODY_SYS_3 == 7 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 7 & CHRONIC_4 == 2) | (BODY_SYS_5 == 7 & CHRONIC_5 == 2) | (BODY_SYS_6 == 7 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 7 & CHRONIC_7 == 2) | (BODY_SYS_8 == 7 & CHRONIC_8 == 2) | (BODY_SYS_9 == 7 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 7 & CHRONIC_10 == 2) | (BODY_SYS_11 == 7 & CHRONIC_11 == 2) | (BODY_SYS_12 == 7 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 7 & CHRONIC_13 == 2) | (BODY_SYS_14 == 7 & CHRONIC_14 == 2) | (BODY_SYS_15 == 7 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 7 & CHRONIC_16 == 2) | (BODY_SYS_17 == 7 & CHRONIC_17 == 2) | (BODY_SYS_18 == 7 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_7 = ifelse((BODY_SYS_1 == 8 & CHRONIC_1 == 2) | (BODY_SYS_2 == 8 & CHRONIC_2 == 2) | (BODY_SYS_3 == 8 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 8 & CHRONIC_4 == 2) | (BODY_SYS_5 == 8 & CHRONIC_5 == 2) | (BODY_SYS_6 == 8 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 8 & CHRONIC_7 == 2) | (BODY_SYS_8 == 8 & CHRONIC_8 == 2) | (BODY_SYS_9 == 8 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 8 & CHRONIC_10 == 2) | (BODY_SYS_11 == 8 & CHRONIC_11 == 2) | (BODY_SYS_12 == 8 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 8 & CHRONIC_13 == 2) | (BODY_SYS_14 == 8 & CHRONIC_14 == 2) | (BODY_SYS_15 == 8 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 8 & CHRONIC_16 == 2) | (BODY_SYS_17 == 8 & CHRONIC_17 == 2) | (BODY_SYS_18 == 8 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_8 = ifelse((BODY_SYS_1 == 9 & CHRONIC_1 == 2) | (BODY_SYS_2 == 9 & CHRONIC_2 == 2) | (BODY_SYS_3 == 9 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 9 & CHRONIC_4 == 2) | (BODY_SYS_5 == 9 & CHRONIC_5 == 2) | (BODY_SYS_6 == 9 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 9 & CHRONIC_7 == 2) | (BODY_SYS_8 == 9 & CHRONIC_8 == 2) | (BODY_SYS_9 == 9 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 9 & CHRONIC_10 == 2) | (BODY_SYS_11 == 9 & CHRONIC_11 == 2) | (BODY_SYS_12 == 9 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 9 & CHRONIC_13 == 2) | (BODY_SYS_14 == 9 & CHRONIC_14 == 2) | (BODY_SYS_15 == 9 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 9 & CHRONIC_16 == 2) | (BODY_SYS_17 == 9 & CHRONIC_17 == 2) | (BODY_SYS_18 == 9 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_9 = ifelse((BODY_SYS_1 == 10 & CHRONIC_1 == 2) | (BODY_SYS_2 == 10 & CHRONIC_2 == 2) | (BODY_SYS_3 == 10 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 10 & CHRONIC_4 == 2) | (BODY_SYS_5 == 10 & CHRONIC_5 == 2) | (BODY_SYS_6 == 10 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 10 & CHRONIC_7 == 2) | (BODY_SYS_8 == 10 & CHRONIC_8 == 2) | (BODY_SYS_9 == 10 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 10 & CHRONIC_10 == 2) | (BODY_SYS_11 == 10 & CHRONIC_11 == 2) | (BODY_SYS_12 == 10 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 10 & CHRONIC_13 == 2) | (BODY_SYS_14 == 10 & CHRONIC_14 == 2) | (BODY_SYS_15 == 10 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 10 & CHRONIC_16 == 2) | (BODY_SYS_17 == 10 & CHRONIC_17 == 2) | (BODY_SYS_18 == 10 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_10 = ifelse((BODY_SYS_1 == 11 & CHRONIC_1 == 2) | (BODY_SYS_2 == 11 & CHRONIC_2 == 2) | (BODY_SYS_3 == 11 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 11 & CHRONIC_4 == 2) | (BODY_SYS_5 == 11 & CHRONIC_5 == 2) | (BODY_SYS_6 == 11 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 11 & CHRONIC_7 == 2) | (BODY_SYS_8 == 11 & CHRONIC_8 == 2) | (BODY_SYS_9 == 11 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 11 & CHRONIC_10 == 2) | (BODY_SYS_11 == 11 & CHRONIC_11 == 2) | (BODY_SYS_12 == 11 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 11 & CHRONIC_13 == 2) | (BODY_SYS_14 == 11 & CHRONIC_14 == 2) | (BODY_SYS_15 == 11 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 11 & CHRONIC_16 == 2) | (BODY_SYS_17 == 11 & CHRONIC_17 == 2) | (BODY_SYS_18 == 11 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_11 = ifelse((BODY_SYS_1 == 12 & CHRONIC_1 == 2) | (BODY_SYS_2 == 12 & CHRONIC_2 == 2) | (BODY_SYS_3 == 12 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 12 & CHRONIC_4 == 2) | (BODY_SYS_5 == 12 & CHRONIC_5 == 2) | (BODY_SYS_6 == 12 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 12 & CHRONIC_7 == 2) | (BODY_SYS_8 == 12 & CHRONIC_8 == 2) | (BODY_SYS_9 == 12 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 12 & CHRONIC_10 == 2) | (BODY_SYS_11 == 12 & CHRONIC_11 == 2) | (BODY_SYS_12 == 12 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 12 & CHRONIC_13 == 2) | (BODY_SYS_14 == 12 & CHRONIC_14 == 2) | (BODY_SYS_15 == 12 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 12 & CHRONIC_16 == 2) | (BODY_SYS_17 == 12 & CHRONIC_17 == 2) | (BODY_SYS_18 == 12 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_12 = ifelse((BODY_SYS_1 == 13 & CHRONIC_1 == 2) | (BODY_SYS_2 == 13 & CHRONIC_2 == 2) | (BODY_SYS_3 == 13 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 13 & CHRONIC_4 == 2) | (BODY_SYS_5 == 13 & CHRONIC_5 == 2) | (BODY_SYS_6 == 13 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 13 & CHRONIC_7 == 2) | (BODY_SYS_8 == 13 & CHRONIC_8 == 2) | (BODY_SYS_9 == 13 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 13 & CHRONIC_10 == 2) | (BODY_SYS_11 == 13 & CHRONIC_11 == 2) | (BODY_SYS_12 == 13 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 13 & CHRONIC_13 == 2) | (BODY_SYS_14 == 13 & CHRONIC_14 == 2) | (BODY_SYS_15 == 13 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 13 & CHRONIC_16 == 2) | (BODY_SYS_17 == 13 & CHRONIC_17 == 2) | (BODY_SYS_18 == 13 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_13 = ifelse((BODY_SYS_1 == 14 & CHRONIC_1 == 2) | (BODY_SYS_2 == 14 & CHRONIC_2 == 2) | (BODY_SYS_3 == 14 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 14 & CHRONIC_4 == 2) | (BODY_SYS_5 == 14 & CHRONIC_5 == 2) | (BODY_SYS_6 == 14 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 14 & CHRONIC_7 == 2) | (BODY_SYS_8 == 14 & CHRONIC_8 == 2) | (BODY_SYS_9 == 14 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 14 & CHRONIC_10 == 2) | (BODY_SYS_11 == 14 & CHRONIC_11 == 2) | (BODY_SYS_12 == 14 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 14 & CHRONIC_13 == 2) | (BODY_SYS_14 == 14 & CHRONIC_14 == 2) | (BODY_SYS_15 == 14 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 14 & CHRONIC_16 == 2) | (BODY_SYS_17 == 14 & CHRONIC_17 == 2) | (BODY_SYS_18 == 14 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_14 = ifelse((BODY_SYS_1 == 15 & CHRONIC_1 == 2) | (BODY_SYS_2 == 15 & CHRONIC_2 == 2) | (BODY_SYS_3 == 15 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 15 & CHRONIC_4 == 2) | (BODY_SYS_5 == 15 & CHRONIC_5 == 2) | (BODY_SYS_6 == 15 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 15 & CHRONIC_7 == 2) | (BODY_SYS_8 == 15 & CHRONIC_8 == 2) | (BODY_SYS_9 == 15 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 15 & CHRONIC_10 == 2) | (BODY_SYS_11 == 15 & CHRONIC_11 == 2) | (BODY_SYS_12 == 15 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 15 & CHRONIC_13 == 2) | (BODY_SYS_14 == 15 & CHRONIC_14 == 2) | (BODY_SYS_15 == 15 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 15 & CHRONIC_16 == 2) | (BODY_SYS_17 == 15 & CHRONIC_17 == 2) | (BODY_SYS_18 == 15 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_15 = ifelse((BODY_SYS_1 == 16 & CHRONIC_1 == 2) | (BODY_SYS_2 == 16 & CHRONIC_2 == 2) | (BODY_SYS_3 == 16 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 16 & CHRONIC_4 == 2) | (BODY_SYS_5 == 16 & CHRONIC_5 == 2) | (BODY_SYS_6 == 16 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 16 & CHRONIC_7 == 2) | (BODY_SYS_8 == 16 & CHRONIC_8 == 2) | (BODY_SYS_9 == 16 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 16 & CHRONIC_10 == 2) | (BODY_SYS_11 == 16 & CHRONIC_11 == 2) | (BODY_SYS_12 == 16 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 16 & CHRONIC_13 == 2) | (BODY_SYS_14 == 16 & CHRONIC_14 == 2) | (BODY_SYS_15 == 16 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 16 & CHRONIC_16 == 2) | (BODY_SYS_17 == 16 & CHRONIC_17 == 2) | (BODY_SYS_18 == 16 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_16 = ifelse((BODY_SYS_1 == 17 & CHRONIC_1 == 2) | (BODY_SYS_2 == 17 & CHRONIC_2 == 2) | (BODY_SYS_3 == 17 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 17 & CHRONIC_4 == 2) | (BODY_SYS_5 == 17 & CHRONIC_5 == 2) | (BODY_SYS_6 == 17 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 17 & CHRONIC_7 == 2) | (BODY_SYS_8 == 17 & CHRONIC_8 == 2) | (BODY_SYS_9 == 17 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 17 & CHRONIC_10 == 2) | (BODY_SYS_11 == 17 & CHRONIC_11 == 2) | (BODY_SYS_12 == 17 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 17 & CHRONIC_13 == 2) | (BODY_SYS_14 == 17 & CHRONIC_14 == 2) | (BODY_SYS_15 == 17 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 17 & CHRONIC_16 == 2) | (BODY_SYS_17 == 17 & CHRONIC_17 == 2) | (BODY_SYS_18 == 17 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_17 = ifelse((BODY_SYS_1 == 18 & CHRONIC_1 == 2) | (BODY_SYS_2 == 18 & CHRONIC_2 == 2) | (BODY_SYS_3 == 18 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 18 & CHRONIC_4 == 2) | (BODY_SYS_5 == 18 & CHRONIC_5 == 2) | (BODY_SYS_6 == 18 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 18 & CHRONIC_7 == 2) | (BODY_SYS_8 == 18 & CHRONIC_8 == 2) | (BODY_SYS_9 == 18 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 18 & CHRONIC_10 == 2) | (BODY_SYS_11 == 18 & CHRONIC_11 == 2) | (BODY_SYS_12 == 18 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 18 & CHRONIC_13 == 2) | (BODY_SYS_14 == 18 & CHRONIC_14 == 2) | (BODY_SYS_15 == 18 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 18 & CHRONIC_16 == 2) | (BODY_SYS_17 == 18 & CHRONIC_17 == 2) | (BODY_SYS_18 == 18 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_18 = ifelse((BODY_SYS_1 == 19 & CHRONIC_1 == 2) | (BODY_SYS_2 == 19 & CHRONIC_2 == 2) | (BODY_SYS_3 == 19 & CHRONIC_3 == 2) |
+                              (BODY_SYS_4 == 19 & CHRONIC_4 == 2) | (BODY_SYS_5 == 19 & CHRONIC_5 == 2) | (BODY_SYS_6 == 19 & CHRONIC_6 == 2) |
+                              (BODY_SYS_7 == 19 & CHRONIC_7 == 2) | (BODY_SYS_8 == 19 & CHRONIC_8 == 2) | (BODY_SYS_9 == 19 & CHRONIC_9 == 2) |
+                              (BODY_SYS_10 == 19 & CHRONIC_10 == 2) | (BODY_SYS_11 == 19 & CHRONIC_11 == 2) | (BODY_SYS_12 == 19 & CHRONIC_12 == 2) |
+                              (BODY_SYS_13 == 19 & CHRONIC_13 == 2) | (BODY_SYS_14 == 19 & CHRONIC_14 == 2) | (BODY_SYS_15 == 19 & CHRONIC_15 == 2) |
+                              (BODY_SYS_16 == 19 & CHRONIC_16 == 2) | (BODY_SYS_17 == 19 & CHRONIC_17 == 2) | (BODY_SYS_18 == 19 & CHRONIC_18 == 2), 1, 0),
+         CHRONIC_BDSYS_NONE = ifelse((BODY_SYS_1 == 20 & CHRONIC_1 == 2) | (BODY_SYS_2 == 20 & CHRONIC_2 == 2) | (BODY_SYS_3 == 20 & CHRONIC_3 == 2) |
+                                     (BODY_SYS_4 == 20 & CHRONIC_4 == 2) | (BODY_SYS_5 == 20 & CHRONIC_5 == 2) | (BODY_SYS_6 == 20 & CHRONIC_6 == 2) |
+                                     (BODY_SYS_7 == 20 & CHRONIC_7 == 2) | (BODY_SYS_8 == 20 & CHRONIC_8 == 2) | (BODY_SYS_9 == 20 & CHRONIC_9 == 2) |
+                                     (BODY_SYS_10 == 20 & CHRONIC_10 == 2) | (BODY_SYS_11 == 20 & CHRONIC_11 == 2) | (BODY_SYS_12 == 20 & CHRONIC_12 == 2) |
+                                     (BODY_SYS_13 == 20 & CHRONIC_13 == 2) | (BODY_SYS_14 == 20 & CHRONIC_14 == 2) | (BODY_SYS_15 == 20 & CHRONIC_15 == 2) |
+                                     (BODY_SYS_16 == 20 & CHRONIC_16 == 2) | (BODY_SYS_17 == 20 & CHRONIC_17 == 2) | (BODY_SYS_18 == 20 & CHRONIC_18 == 2), 1, 0)
+         )
 
-
-
-
-
-
-claims[,80:ncol(claims)] <- lapply(claims[,80:ncol(claims)], factor)
+claims[,116:135][is.na(claims[,116:135])] <- 0
+claims[,80:115] <- lapply(claims[,80:115], factor)
 claims$ED_NOT_NEEDED_PROP[is.na(claims$ED_NOT_NEEDED_PROP)] <- 0
 
 claims_sub <- claims %>%
-    mutate(TARGET = ifelse(SERVICE_TYPE == "ED" & (ED_NOT_NEEDED_PROP > 0.9), 1, 0)) %>%
+    mutate(TARGET = ifelse(SERVICE_TYPE == "ED" & ED_NOT_NEEDED_PROP > 0.9, 1, 0)) %>%
     mutate(AGE_BIN = as.factor(cut(MEMBER_AGE, breaks = seq(0,90, by =10), right = FALSE))) %>%
     group_by(MRN_ALIAS, MEMBER_SEX, AGE_BIN) %>%
-    summarize()
+    summarize(TARGET = as.factor(max(TARGET)),
+              PCP_V70_YEARLY_NONED = as.factor(ifelse((sum(PCP_ID == VENDOR_PROV_ID | (CODE_1 == "V70.0" & SERVICE_TYPE != "ED"))/n_distinct(YEAR))>=1,"Y","N")),
+              CHRONIC_SYS_0 = as.factor(max(CHRONIC_BDSYS_0)),
+              CHRONIC_SYS_1 = as.factor(max(CHRONIC_BDSYS_1)),
+              CHRONIC_SYS_2 = as.factor(max(CHRONIC_BDSYS_2)),
+              CHRONIC_SYS_3 = as.factor(max(CHRONIC_BDSYS_3)),
+              CHRONIC_SYS_4 = as.factor(max(CHRONIC_BDSYS_4)),
+              CHRONIC_SYS_5 = as.factor(max(CHRONIC_BDSYS_5)),
+              CHRONIC_SYS_6 = as.factor(max(CHRONIC_BDSYS_6)),
+              CHRONIC_SYS_7 = as.factor(max(CHRONIC_BDSYS_7)),
+              CHRONIC_SYS_8 = as.factor(max(CHRONIC_BDSYS_8)),
+              CHRONIC_SYS_9 = as.factor(max(CHRONIC_BDSYS_9)),
+              CHRONIC_SYS_10 = as.factor(max(CHRONIC_BDSYS_10)),
+              CHRONIC_SYS_11 = as.factor(max(CHRONIC_BDSYS_11)),
+              CHRONIC_SYS_12 = as.factor(max(CHRONIC_BDSYS_12)),
+              CHRONIC_SYS_13 = as.factor(max(CHRONIC_BDSYS_13)),
+              CHRONIC_SYS_14 = as.factor(max(CHRONIC_BDSYS_14)),
+              CHRONIC_SYS_15 = as.factor(max(CHRONIC_BDSYS_15)),
+              CHRONIC_SYS_16 = as.factor(max(CHRONIC_BDSYS_16)),
+              CHRONIC_SYS_17 = as.factor(max(CHRONIC_BDSYS_17)),
+              CHRONIC_SYS_18 = as.factor(max(CHRONIC_BDSYS_18)),
+              CHRONIC_SYS_NONE = as.factor(max(CHRONIC_BDSYS_NONE)))
 
 
 
