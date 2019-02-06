@@ -298,7 +298,7 @@ claims_sub <- claims %>%
               CHRONIC_SYS_NONE = as.factor(max(CHRONIC_BDSYS_NONE)))
 
 
-
+saveRDS(claims_sub, file = "CHRON_MBR.rds")
 
 
 # claims_diag <- merge(claims,
