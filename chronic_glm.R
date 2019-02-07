@@ -2,6 +2,7 @@ library(dplyr)
 library(caret)
 library(caTools)
 library(aod)
+library(pROC)
 
 claims_sub <- read_rds("Data/CHRON_MBR.rds")
 
@@ -24,6 +25,19 @@ chronic_logit <- glm(formula = TARGET ~ MEMBER_SEX + AGE_BIN + PCP_V70_YEARLY_NO
                      data = train)
 
 summary(chronic_logit)
+anova(chronic_logit, test = "Chisq")
 wald.test(b = coef(chronic_logit), Sigma = vcov(chronic_logit), Terms = 4:6)
 
-glm.fit()
+#Fit model to test data
+fitted.results <- predict(object = chronic_logit,
+                          newdata = test[,-c(1,6,25)],
+                          type = 'response')
+fitted.results <- ifelse(fitted.results > .5, 1, 0)
+
+#Misclassifier Error
+mce <- length(test$TARGET[fitted.results != test$TARGET])/length(test$TARGET)
+print(paste('Accuracy:',1-mce))
+
+#ROC Curve
+groc <- roc(fitted.results, as.numeric(test$TARGET))
+plot(groc)
