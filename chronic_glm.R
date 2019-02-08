@@ -41,3 +41,5 @@ print(paste('Accuracy:',1-mce))
 #ROC Curve
 groc <- roc(fitted.results, as.numeric(test$TARGET))
 plot(groc)
+
+
