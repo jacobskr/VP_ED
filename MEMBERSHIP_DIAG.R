@@ -24,7 +24,7 @@ library(dplyr)
 library(tidyverse)
 library(reshape2)
 
-# Import and edit claims data -  Ryan's code
+# Import claims table and clean diagnostic codes
 claimsFull <- read_rds("Data/claimsCleanFull.RDS")
 
 all_diag_df <- claimsFull %>% 
@@ -34,6 +34,7 @@ all_diag <- c(t(all_diag_df))
 
 all_diag <- data.frame(table(all_diag))
 rm(all_diag_df)
+gc()
 
 # Create vector of ICD-10 'V' codes
 icdv <- str_subset(all_diag$all_diag, "[V]\\d{2}\\.") #Grab all codes that start with V
@@ -43,9 +44,15 @@ icd9 <- str_subset(all_diag$all_diag, "^\\d") #ICD-9 codes start with a number o
 icd9e <- str_subset(all_diag$all_diag, "[E]\\d{3}") #ICD-9 "E" codes have 3 digits before decimal
 
 icd9Only <- all_diag %>%
-  filter((all_diag %in% icd9) | all_diag %in% icd9e) | all_diag %in% icdv) & !(all_diag %in% icd10v))
+  filter((all_diag %in% icd9) | (all_diag %in% icd9e) | (all_diag %in% icdv) & !(all_diag %in% icd10v))
 
 icd9vector <- icd9Only$all_diag 
+rm(icdv)
+rm(icd10v)
+rm(icd9)
+rm(icd9e)
+rm(icd9Only)
+gc()
 
 # Add new un-punctuated codes and ICD version to claims data
 claimsFull <- claimsFull %>%
@@ -103,7 +110,7 @@ bodysys$BODY_SYSTEM <- as.factor(as.character(bodysys$BODY_SYSTEM))
 bodysys$CHRONIC_INDICATOR <- as.factor(as.character(bodysys$CHRONIC_INDICATOR))
 
 
-
+#Create columns based on each CODE_X to indicate which body system the code pertains to
 claims <- claimsFull %>%
   mutate(BODY_SYS_1 = ifelse(paste(DIAG_CODE_1, ICD_V_1, sep = "-") %in% paste(bodysys$DIAG_CODE, bodysys$ICD_VERSION, sep = "-"), bodysys$BODY_SYSTEM, NA),
          CHRONIC_1 = ifelse(paste(DIAG_CODE_1, ICD_V_1, sep = "-") %in% paste(bodysys$DIAG_CODE, bodysys$ICD_VERSION, sep = "-"), bodysys$CHRONIC_INDICATOR, NA),
@@ -141,7 +148,10 @@ claims <- claimsFull %>%
          CHRONIC_17 = ifelse(paste(DIAG_CODE_17, ICD_V_17, sep = "-") %in% paste(bodysys$DIAG_CODE, bodysys$ICD_VERSION, sep = "-"), bodysys$CHRONIC_INDICATOR, NA),
          BODY_SYS_18 = ifelse(paste(DIAG_CODE_18, ICD_V_18, sep = "-") %in% paste(bodysys$DIAG_CODE, bodysys$ICD_VERSION, sep = "-"), bodysys$BODY_SYSTEM, NA),
          CHRONIC_18 = ifelse(paste(DIAG_CODE_18, ICD_V_18, sep = "-") %in% paste(bodysys$DIAG_CODE, bodysys$ICD_VERSION, sep = "-"), bodysys$CHRONIC_INDICATOR, NA))
+rm(claimsFull)
+gc()
 
+#Creates a boolean column for each body system (0-18 and 'NONE') based on the claim row stating if there was a chronic condition for that system in the claim
 claims <- claims %>%
   mutate(
          CHRONIC_BDSYS_0 = ifelse((BODY_SYS_1 == 1 & CHRONIC_1 == 2) | (BODY_SYS_2 == 1 & CHRONIC_2 == 2) | (BODY_SYS_3 == 1 & CHRONIC_3 == 2) |
@@ -266,10 +276,12 @@ claims <- claims %>%
                                      (BODY_SYS_16 == 20 & CHRONIC_16 == 2) | (BODY_SYS_17 == 20 & CHRONIC_17 == 2) | (BODY_SYS_18 == 20 & CHRONIC_18 == 2), 1, 0)
          )
 
+#Turns NA's into 0s in the CHRONIC_BDSYS_ columns, ED_NN column, and turns other columns to factors
 claims[,116:135][is.na(claims[,116:135])] <- 0
 claims[,80:115] <- lapply(claims[,80:115], factor)
 claims$ED_NOT_NEEDED_PROP[is.na(claims$ED_NOT_NEEDED_PROP)] <- 0
 
+#Aggregated dataset based on member, sex, and age bin to identify chronic conditions in each body sytem by member
 claims_sub <- claims %>%
     mutate(TARGET = ifelse(SERVICE_TYPE == "ED" & ED_NOT_NEEDED_PROP > 0.9, 1, 0)) %>%
     mutate(AGE_BIN = as.factor(cut(MEMBER_AGE, breaks = seq(0,90, by =10), right = FALSE))) %>%
@@ -297,48 +309,11 @@ claims_sub <- claims %>%
               CHRONIC_SYS_18 = as.factor(max(CHRONIC_BDSYS_18)),
               CHRONIC_SYS_NONE = as.factor(max(CHRONIC_BDSYS_NONE)))
 
+#Only run if don't need claims data anymore:
+# rm(claims)
+# gc()
 
 saveRDS(claims_sub, file = "CHRON_MBR.rds")
-
-
-# claims_diag <- merge(claims,
-#                      bodysys[,c("CODE","BODY_SYSTEM")],
-#                      by.x = "CODE_1",
-#                      by.y = "CODE",
-#                      all.x = TRUE,
-#                      sort = FALSE,
-#                      no.dups = FALSE)
-#
-#
-# codes <- NULL
-#
-# for (i in seq(1:18)){
-#   temp <- paste("CODE_",i, sep = "")
-#   codes <- cbind(test, temp)
-# }
-
-
-
-# Combine claims and diagnosis data
-# claims_diag <- matrix()
-# 
-# for (i in seq(1:18)){
-#   temp <- merge(claimsFull[,c(paste("DIAG_CODE_",i,sep=""),
-#                               paste("ICD_V_",i,sep=""))],
-#                 bodysys[,c("DIAG_CODE",
-#                            "ICD_VERSION",
-#                            "BODY_SYSTEM")],
-#                 by.x = c(paste("DIAG_CODE_",i,sep=""),
-#                          paste("ICD_V_",i,sep="")),
-#                 by.y = c("DIAG_CODE",
-#                          "ICD_VERSION"),
-#                 all.x = TRUE,
-#                 sort = FALSE,
-#                 no.dups = FALSE)
-#   
-#   claims_diag <- cbind(claims_diag, temp)
-# }
-
 
 
 
