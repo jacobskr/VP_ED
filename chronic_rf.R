@@ -1,4 +1,5 @@
 library(randomForest)
+library(caTools)
 
 #Import Data and get rid of records with NAs (need to find source of NAs at some point)
 claims_sub <- read_rds("Data/CHRON_MBR.rds")
