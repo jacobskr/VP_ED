@@ -14,7 +14,7 @@ train = subset(claims_sub, sample == TRUE)
 test = subset(claims_sub, sample == FALSE)
 
 # Create Model... Need to run this later due to space/RAM issues -  also add other stats diagnostics 
-rfmodel <- randomForest(TARGET ~ . - MRN_ALIAS, data = train)
+rfmodel <- randomForest(NEXT_SERVICE ~ ., data = train)
 
 rfpred <- predict(rfmodel, newdata = test)
 table(rfpred, test$TARGET)

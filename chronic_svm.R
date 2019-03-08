@@ -1,15 +1,18 @@
 library(e1071)
 library(caTools)
 
+claims_svm <- readRDS("Data/claims_body_as_code_with_lead_service.rds")
+claims_svm <- claims_svm %>% select(NEXT_SERVICE, MEMBER_SEX, AGE_GROUP,starts_with("bs_"), starts_with("CODE_"))
+claims_svm[is.na(claims_svm)] <- 0
 
 # https://www.r-bloggers.com/machine-learning-using-support-vector-machines/
 set.seed(123)
-sample = sample.split(claims_sub$MRN_ALIAS, SplitRatio = .75)
-train = subset(claims_sub, sample == TRUE)
-test = subset(claims_sub, sample == FALSE)
+sample = sample.split(claims_svm, SplitRatio = .75)
+train = subset(claims_svm, sample == TRUE)
+test = subset(claims_svm, sample == FALSE)
 
 #Create support vector machine
-svmmodel <- svm(TARGET ~ . - MRN_ALIAS, train)
+svmmodel <- svm(NEXT_SERVICE ~ . , train)
 
 # Run it on test data
 svmpred <- predict(model_svm, test)
